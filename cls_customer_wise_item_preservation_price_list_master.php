@@ -16,8 +16,8 @@ public $_customer_wise_item_preservation_price_list_id;
     public $_transactionmode;
     
                     /** FOR DETAIL **/
-                    public $_hidden_array;
-                     
+                    public $_array_itemdetail;
+                     public $_array_itemdelete;
                     /** \FOR DETAIL **/
                     
 }
@@ -42,25 +42,32 @@ class bll_customerwiseitempreservationpricelistmaster
                   $_bllitem= new bll_customerwiseitempreservationpricelistdetail();
                     if($this->_mdl->_transactionmode!="D")
                     {
-                        if (isset($_POST["hidden_array"])) {
-    $detailArray = json_decode($_POST["hidden_array"], true);
-
-    if (!empty($detailArray)) {
-        foreach ($detailArray as $detail) {
-            // Prepare detail object
-            $detailModel = new mdl_customerwiseitempreservationpricelistdetail();
-            $detailModel->customer_wise_item_preservation_price_list_id = $masterId; // Master ID
-            $detailModel->packing_unit_id = $detail['packing_unit_id'];
-            $detailModel->rent_per_qty_month = $detail['rent_per_qty_month'];
-            $detailModel->rent_per_qty_season = $detail['rent_per_qty_season'];
-            $detailModel->detailtransactionmode = "I"; // Insert mode
-
-            // Save detail record
-            $detailBLL = new bll_customerwiseitempreservationpricelistdetail();
-            $detailBLL->dbTransaction($detailModel);
-        }
-    }
-}
+                        if(!empty($this->_mdl->_array_itemdetail)) {
+                             for($iterator= $this->_mdl->_array_itemdetail->getIterator();$iterator->valid();$iterator->next())
+                             {
+                                     $detailrow=$iterator->current();
+                                    if(is_array($detailrow)) {
+                                        foreach($detailrow as $name=>$value) {
+                                            $_bllitem->_mdl->{$name}=$value;
+                                        }
+                                    }
+                                    $_bllitem->_mdl->customer_wise_item_preservation_price_list_id = $this->_mdl->_customer_wise_item_preservation_price_list_id;
+                                    $_bllitem->dbTransaction();
+                             }
+                        }
+                         if(!empty($this->_mdl->_array_itemdelete)) {
+                            for($iterator= $this->_mdl->_array_itemdelete->getIterator();$iterator->valid();$iterator->next())
+                             {
+                                     $detailrow=$iterator->current();
+                                    if(is_array($detailrow)) {
+                                        foreach($detailrow as $name=>$value) {
+                                            $_bllitem->_mdl->{$name}=$value;
+                                        }
+                                    }
+                                    $_bllitem->_mdl->customer_wise_item_preservation_price_list_id = $this->_mdl->_customer_wise_item_preservation_price_list_id;
+                                    $_bllitem->dbTransaction();
+                             }
+                         }
                   }
                /** \FOR DETAIL **/
         
@@ -251,7 +258,7 @@ if(isset($_POST["type"]) && $_POST["type"]=="ajax") {
 }
 if(isset($_POST["masterHidden"]) && ($_POST["masterHidden"]=="save"))
 {
-  
+ 
             
             if(isset($_REQUEST["customer_wise_item_preservation_price_list_id"]) && !empty($_REQUEST["customer_wise_item_preservation_price_list_id"]))
                 $field=trim($_REQUEST["customer_wise_item_preservation_price_list_id"]);
@@ -339,10 +346,22 @@ if(isset($_POST["masterHidden"]) && ($_POST["masterHidden"]=="save"))
             $_bll->_mdl->_transactionmode =$tmode;
          
                /*** FOR DETAIL ***/
-                  if (isset($_POST["hidden_array"])) {
-        $detailRecords = json_decode($_POST["hidden_array"], true);
-        $_bll->_mdl->_array_itemdetail = new ArrayObject($detailRecords);
-    }
+                $_bll->_mdl->_array_itemdetail=array();
+                $_bll->_mdl->_array_itemdelete=array();
+                if(isset($_REQUEST["detail_records"])) {
+                  $detail_records=json_decode($_REQUEST["detail_records"],true);
+                   if(!empty($detail_records)) {
+                        $arrayobject = new ArrayObject($detail_records);
+                          $_bll->_mdl->_array_itemdetail=$arrayobject;
+                    }
+                }
+                if(isset($_REQUEST["deleted_records"])) {
+                  $deleted_records=json_decode($_REQUEST["deleted_records"],true);
+                   if(!empty($deleted_records)) {
+                        $deleteobject = new ArrayObject($deleted_records);
+                          $_bll->_mdl->_array_itemdelete=$deleteobject;
+                    }
+                }
                 /*** \FOR DETAIL ***/
             $_bll->dbTransaction();
 }
