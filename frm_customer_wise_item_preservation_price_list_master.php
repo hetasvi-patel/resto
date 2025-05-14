@@ -362,6 +362,7 @@
                   <h4 class="modal-title" id="modalToggleLabel">Add Customer Contact Details</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
+<!--
               <div class="modal-body">
                 <div class="box-body container-fluid">
                     <div class="form-group row" >
@@ -539,12 +540,15 @@
                     </div>
               </div>
               </div>
+-->
+<!--
               <div class="modal-footer">
                 
                 <?php echo $hidden_str; ?>
                 <input class="btn btn-success" type="submit" id="detailbtn_add" name="detailbtn_add" value= "Save">
                 <input class="btn btn-dark" type="button" id="detailbtn_cancel" name="detailbtn_add" value= "Cancel" data-bs-dismiss="modal">
               </div>
+-->
                 </form>
             </div> <!-- /.modal-content -->
           </div>  <!-- /.modal-dialog -->
@@ -1027,3 +1031,4 @@ $(document).ready(function () {
 <?php
     include("include/footer_close.php");
 ?>
+    
